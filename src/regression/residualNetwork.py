@@ -5,7 +5,7 @@ import torch.nn as nn
 class ResidualNet(nn.Module):
     def __init__(self, 
                  in_features:int  = 3,
-                 out_features:int = 5,
+                 out_features:int = 3,
                  nhiddenunits:int = 128):
         
         super(ResidualNet, self).__init__()
@@ -45,50 +45,45 @@ class ResidualNet(nn.Module):
         return x.pow(2).sum(dim=1, keepdim=True)
 
 
-    def jacobian_value(self, x):
+    def jacobian(self, x):
         x = x.reshape(1, 3)
         j = torch.autograd.functional.jacobian(self.forward, x).squeeze()
         return j
     
-    def hessian_value(self, x):
+    def hessian(self, x):
         x = x.reshape(1, 3)
         h = torch.autograd.functional.hessian(self.forward, x).squeeze()
         return h
+
+    def batch_hessian(self, x):
+        h = []
+        for xyz in x:
+            h.append(self.hessian(xyz))
+        return torch.stack(h).squeeze()
     
-    def batch_jacobian_value(self, x):
-        jj = []
-        for x in x:
-            x = x.reshape(1, 3)
-            j = torch.autograd.functional.jacobian(self.forward, x).squeeze()
-            jj.append(j)
-        return torch.stack(jj).squeeze()
+    def batch_jacobian(self, x):
+        j = []
+        for xyz in x:
+            j.append(self.jacobian(xyz))
+        return torch.stack(j).squeeze()
     
-    def batch_hessian_value(self, x):
-        hh = []
-        for x in x:
-            x = x.reshape(1, 3)
-            h = torch.autograd.functional.hessian(self.forward, x).squeeze()
-            hh.append(h)
-        return torch.stack(hh).squeeze()
-    
-    
-        
+    #......Gauss Approximation
     def residual(self, x):
         x = self.activation(self.fc1(x)) 
         x = self.activation(self.fc2(x)) 
         x = self.fc3(x)
         return x
-
     
     def jacobian_residual(self, x):
         j = torch.autograd.functional.jacobian(self.residual, x).squeeze()
         return j
-    
+
     def gradient(self, x):
         j = self.jacobian_residual(x)
         r = self.residual(x)
         return j.T @ r
-    
+
+
     def gauss_hessian(self, x):
         j = self.jacobian_residual(x).detach()
         return j.T @ j

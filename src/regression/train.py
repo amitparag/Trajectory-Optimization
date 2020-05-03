@@ -13,7 +13,7 @@ def train_on_values(feedforward:bool = True):
 
     # Training data
     datagen = Datagen()
-    positions, values = datagen.positions_values(3000) 
+    positions, values = datagen.positions_values(5000) 
     # Torch dataloader
     dataset = torch.utils.data.TensorDataset(positions,values)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 1000) 
@@ -60,7 +60,7 @@ def train_on_cost():
 
     # Training data
     datagen = Datagen()
-    positions, values = datagen.positions_costs(3000) 
+    positions, values = datagen.positions_costs(5000) 
     # Torch dataloader
     dataset = torch.utils.data.TensorDataset(positions,values)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 700) 
@@ -97,6 +97,6 @@ def train_on_cost():
     
     
 if __name__=='__main__':
-    #train_on_values(feedforward=True)
+    train_on_values(feedforward=True)
     train_on_values(feedforward=False)
-    #train_on_cost()
+    train_on_cost()
