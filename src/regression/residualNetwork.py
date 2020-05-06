@@ -76,7 +76,7 @@ class ResidualNet(nn.Module):
     
     def jacobian_residual(self, x):
         j = torch.autograd.functional.jacobian(self.residual, x).squeeze()
-        return j
+        return 2 * j
 
     def gradient(self, x):
         j = self.jacobian_residual(x)
