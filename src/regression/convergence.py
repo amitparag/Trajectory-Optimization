@@ -16,10 +16,11 @@ import crocoddyl
 import numpy as np
 from unicycle_utils import *
 
+
 # ddp.th_stop
 STOP = 1e-8
 # Maxiters 
-MAXITERS = 1000
+MAXITERS = 10000
 
 
 
@@ -29,12 +30,11 @@ rnet = torch.load("resNet.pth")   # Residual net trained on  ddp.cost
 
 
 # Random starting position generated from [2.1, 2.1] for x, y and [-2pi, 2pi] for theta
-xyz = np.array([np.random.uniform(-2.1, 2.1),
-                np.random.uniform(-2.1, 2.1),
-                np.random.uniform(-2*np.pi, 2*np.pi)])
+#xyz = np.array([np.random.uniform(-2.1, 2.1),
+#                np.random.uniform(-2.1, 2.1),
+#                np.random.uniform(-2*np.pi, 2*np.pi)])
 
-#xyz = np.array([-2., 2.1, -1])
-
+xyz = np.array([ 1.06050777,  2.06662238, -5.95716119])
 
 model = crocoddyl.ActionModelUnicycle()
 terminal_model = TerminalUnicycle(rnet)
@@ -45,5 +45,10 @@ ddp.setCallbacks([crocoddyl.CallbackLogger(), crocoddyl.CallbackVerbose()])
 ddp.th_stop = STOP
 ddp.solve([] , [], MAXITERS)
 
+mt = problem.terminalModel
+dt = problem.terminalData
+xt = ddp.xs[-1]
 
+
+print(dt.Lxx)
 print(ddp.iter)
