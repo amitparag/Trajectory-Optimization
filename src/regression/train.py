@@ -66,7 +66,7 @@ def train_on_cost():
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 700) 
 
 
-    net = ValueNet()
+    net = ResidualNet()
 
     # Initialize loss and optimizer
     criterion = torch.nn.MSELoss(reduction='sum')
@@ -93,10 +93,10 @@ def train_on_cost():
         ypred = net(xtest)
     error = (ytest - ypred)
     print(f"Mean Squared Error = {torch.mean(error ** 2)}")
-    torch.save(net, "costNet.pth")
+    torch.save(net, "rescostNet.pth")
     
     
 if __name__=='__main__':
-    train_on_values(feedforward=True)
-    train_on_values(feedforward=False)
+    #train_on_values(feedforward=True)
+    #train_on_values(feedforward=False)
     train_on_cost()
